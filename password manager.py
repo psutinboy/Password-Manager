@@ -29,7 +29,7 @@ class MainWindow:
 
     def set_master_password(self):
         master_password = self.master_password_entry.get()
-        with open('master_password_hash.txt', 'nsew') as f:
+        with open('master_password_hash.txt', 'w') as f:
             f.write(hashlib.sha256(master_password.encode()).hexdigest())
         messagebox.showinfo('Success', 'Master password set!')
         self.set_button.destroy()
@@ -92,7 +92,7 @@ class PasswordManagerWindow:
         password_characters = string.ascii_letters + string.digits + string.punctuation
 
         # Generate a random password
-        password = ''.join(random.choice(password_characters) for i in range(password_length))
+        password = ''.join(random.choice(password_characters) for _ in range(password_length))
 
         # Set the password entry field to the new password
         self.password_entry.delete(0, 'end')
@@ -178,17 +178,19 @@ class ViewPasswordsWindow:
         conn.close()
         self.root.destroy()
 
+KEY_FILE = 'key.key'
+
 def on_close():
     conn.close()
     root.destroy()
 
 # Generate a key for encryption and decryption
-if os.path.isfile('key.key'):
-    with open('key.key', 'rb') as f:
+if os.path.isfile(KEY_FILE):
+    with open(KEY_FILE, 'rb') as f:
         key = f.read()
 else:
     key = Fernet.generate_key()
-    with open('key.key', 'wb') as f:
+    with open(KEY_FILE, 'wb') as f:
         f.write(key)
 cipher_suite = Fernet(key)
 
