@@ -5,11 +5,13 @@ import hashlib
 import sqlite3
 from cryptography.fernet import Fernet
 import pyperclip
+import random
+import string
 
 class MainWindow:
     def __init__(self, root):
         self.root = root
-        self.root.geometry('300x200')
+        self.root.geometry('300x200+500+400')
         self.root.title('Password Manager')
 
         self.master_password_label = tk.Label(self.root, text='Master Password')
@@ -27,7 +29,7 @@ class MainWindow:
 
     def set_master_password(self):
         master_password = self.master_password_entry.get()
-        with open('master_password_hash.txt', 'w') as f:
+        with open('master_password_hash.txt', 'nsew') as f:
             f.write(hashlib.sha256(master_password.encode()).hexdigest())
         messagebox.showinfo('Success', 'Master password set!')
         self.set_button.destroy()
@@ -45,41 +47,56 @@ class MainWindow:
             messagebox.showerror('Error', 'Incorrect password!')
             
     def open_password_manager(self):
-                self.password_manager = PasswordManagerWindow(self.root)
+        self.password_manager = PasswordManagerWindow(self.root)
 
 class PasswordManagerWindow:
     def __init__(self, root):
         self.root = tk.Toplevel(root)
-        self.root.geometry('300x200')
+        self.root.geometry('285x200+800+400')
         self.root.title('Password Manager')
 
         self.service_label = tk.Label(self.root, text='Service')
-        self.service_label.pack()
+        self.service_label.grid(row=0, column=1, sticky='nsew')
 
         self.service_entry = tk.Entry(self.root)
-        self.service_entry.pack()
+        self.service_entry.grid(row=1, column=1, sticky='nsew')
 
         self.username_label = tk.Label(self.root, text='Username')
-        self.username_label.pack()
+        self.username_label.grid(row=2, column=1, sticky='nsew')
 
         self.username_entry = tk.Entry(self.root)
-        self.username_entry.pack()
+        self.username_entry.grid(row=3, column=1, sticky='nsew')
 
         self.password_label = tk.Label(self.root, text='Password')
-        self.password_label.pack()
+        self.password_label.grid(row=4, column=1, sticky='nsew')
 
         self.password_entry = tk.Entry(self.root, show='*')
-        self.password_entry.pack()
+        self.password_entry.grid(row=5, column=1, sticky='nsew')
 
         self.show_password = tk.IntVar()
         self.show_password_checkbutton = tk.Checkbutton(self.root, text='Show Password', variable=self.show_password, command=self.toggle_password)
-        self.show_password_checkbutton.pack()
+        self.show_password_checkbutton.grid(row=6, column=1, sticky='nsew')
 
-        self.add_button = tk.Button(self.root, text='Add', command=self.add_password)
-        self.add_button.pack()
+        self.add_button = tk.Button(self.root, text='Add Entry', command=self.add_password)
+        self.add_button.grid(row=7, column=2, padx=5, pady=5)
 
-        self.view_button = tk.Button(self.root, text='View', command=self.view_passwords)
-        self.view_button.pack()
+        self.view_button = tk.Button(self.root, text='View Entries', command=self.view_passwords)
+        self.view_button.grid(row=7, column=0, padx=5, pady=5)
+
+        self.generate_button = tk.Button(self.root, text='Generate Password', command=self.generate_password)
+        self.generate_button.grid(row=7, column=1, padx=5, pady=5)
+        
+    def generate_password(self):
+        # Define the password length and the characters that can be used
+        password_length = 12
+        password_characters = string.ascii_letters + string.digits + string.punctuation
+
+        # Generate a random password
+        password = ''.join(random.choice(password_characters) for i in range(password_length))
+
+        # Set the password entry field to the new password
+        self.password_entry.delete(0, 'end')
+        self.password_entry.insert(0, password)
 
     def toggle_password(self):
         if self.show_password.get():
@@ -108,7 +125,7 @@ class PasswordManagerWindow:
 class ViewPasswordsWindow:
     def __init__(self, root):
         self.root = tk.Toplevel(root)
-        self.root.geometry('300x200')
+        self.root.geometry('300x200+1085+400')
         self.root.title('View Passwords')
         
         # Add scrollbar to the listbox
@@ -137,6 +154,7 @@ class ViewPasswordsWindow:
         username, password = self.passwords[selected_service]
         
         info_window = tk.Toplevel(self.root)
+        info_window.geometry('200x130+1130+430')
         info_window.title('Info')
         
         # Display the Service, Username, and Password
